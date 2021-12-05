@@ -1,0 +1,1 @@
+export { PaintPad } from './paintpad';
