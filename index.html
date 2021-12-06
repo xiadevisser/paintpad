@@ -5,29 +5,217 @@
   <meta charset="UTF-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <script src="index.js" defer></script>
+
   <title>Paint Pad</title>
 
   <style>
+    #title a {
+      text-decoration: none !important;
+      color: #000000 !important;
+    }
+
     body {
       font-family: Verdana, Geneva, Tahoma, sans-serif;
       background-color: lightblue;
-    }
-
-    body div {
       display: flex;
       flex-direction: column;
       justify-content: center;
       align-items: center;
     }
+
+    #options {
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      font-size: 12px;
+      margin-top: 1rem;
+    }
+
+    table td {
+      height: 24px;
+    }
+
+    input[type="text"],
+    input[type="number"] {
+      font-size: 12px;
+      padding: 4px;
+      margin: 1px;
+      border: none;
+    }
+
+    .container {
+      margin-left: 2px;
+      display: block;
+      position: relative;
+      padding-left: 35px;
+      margin-bottom: 12px;
+      cursor: pointer;
+      font-size: 22px;
+      -webkit-user-select: none;
+      -moz-user-select: none;
+      -ms-user-select: none;
+      user-select: none;
+    }
+
+    .container input {
+      position: absolute;
+      opacity: 0;
+      cursor: pointer;
+      height: 0;
+      width: 0;
+    }
+
+    .checkmark {
+      position: absolute;
+      top: 0;
+      left: 0;
+      height: 12px;
+      width: 12px;
+      background-color: #eee;
+    }
+
+    .container:hover input~.checkmark {
+      background-color: #ccc;
+    }
+
+    .container input:checked~.checkmark {
+      background-color: #2196F3;
+    }
+
+    .checkmark:after {
+      content: "";
+      position: absolute;
+      display: none;
+    }
+
+    .container input:checked~.checkmark:after {
+      display: block;
+    }
+
+    .container .checkmark:after {
+      left: 4px;
+      top: 1px;
+      width: 3px;
+      height: 6px;
+      border: solid white;
+      border-width: 0 2px 2px 0;
+      -webkit-transform: rotate(45deg);
+      -ms-transform: rotate(45deg);
+      transform: rotate(45deg);
+    }
   </style>
 </head>
 
 <body>
-  <div>
-    <h3>Paint Pad</h3>
-    <paint-pad width="400px" height="400px" lineWidth="5" />
+  <h3 id="title"><a href="https://www.npmjs.com/package/paintpad">Paint Pad</a></h3>
+  <div id="paintpad">
+    <paint-pad width="300px" height="300px" lineWidth="5"></paint-pad>
+  </div>
+  <div id="options">
+    <h4>options</h4>
+    <table>
+      <tr>
+        <td>width</td>
+        <td><input id="width" type="text" placeholder="500px" /></td>
+      </tr>
+      <tr>
+        <td>height</td>
+        <td><input id="height" type="text" placeholder="500px" /></td>
+      </tr>
+      <tr>
+        <td>line width</td>
+        <td><input id="lineWidth" type="number" placeholder="10" /></td>
+      </tr>
+      <tr>
+        <td>min line width</td>
+        <td><input id="lineWidthMin" type="number" placeholder="1" /></td>
+      </tr>
+      <tr>
+        <td>max line width</td>
+        <td><input id="lineWidthMax" type="number" placeholder="30" /></td>
+      </tr>
+      <tr>
+        <td>color</td>
+        <td><input id="color" type="text" placeholder="#3EB489" /></td>
+      </tr>
+      <tr>
+        <td>image name</td>
+        <td><input id="imageName" type="text" placeholder="my image" /></td>
+      </tr>
+      <tr>
+        <td>has slider</td>
+        <td><label class="container">
+            <input id="hasSlider" type="checkbox" checked="checked">
+            <span class="checkmark"></span>
+          </label></td>
+      </tr>
+      <tr>
+        <td>has color picker</td>
+        <td><label class="container">
+            <input id="hasColorPicker" type="checkbox" checked="checked">
+            <span class="checkmark"></span>
+          </label></td>
+      </tr>
+      <tr>
+        <td>is clearable</td>
+        <td><label class="container">
+            <input id="isClearable" type="checkbox" checked="checked">
+            <span class="checkmark"></span>
+          </label></td>
+      </tr>
+      <tr>
+        <td>is downloadable</td>
+        <td><label class="container">
+            <input id="isDownloadable" type="checkbox" checked="checked">
+            <span class="checkmark"></span>
+          </label></td>
+      </tr>
+      <tr>
+        <td>is state changeable</td>
+        <td><label class="container">
+            <input id="isStateChangeable" type="checkbox" checked="checked">
+            <span class="checkmark"></span>
+          </label></td>
+      </tr>
+    </table>
+
   </div>
 </body>
+<script src="index.js"></script>
+<script>
+  const paintPad = document.querySelector("paint-pad");
+
+  document.getElementById('width').addEventListener('change', (e) => { paintPad.setWidth(e.target.value); });
+  document.getElementById('height').addEventListener('change', (e) => { paintPad.setHeight(e.target.value); });
+  document.getElementById('lineWidth').addEventListener('change', (e) => { paintPad.setLineWidth(e.target.value) });
+  document.getElementById('lineWidthMin').addEventListener('change', (e) => { paintPad.setLineWidthMin(e.target.value); });
+  document.getElementById('lineWidthMax').addEventListener('change', (e) => { paintPad.setLineWidthMax(e.target.value); });
+  document.getElementById('color').addEventListener('change', (e) => { paintPad.setColor(e.target.value); });
+  document.getElementById('imageName').addEventListener('change', (e) => { paintPad.setImageName(e.target.value); });
+  document.getElementById('hasSlider').addEventListener('change', (e) => { paintPad.setSlider(e.target.checked); });
+  document.getElementById('hasColorPicker').addEventListener('change', (e) => { paintPad.setColorPicker(e.target.checked); });
+  document.getElementById('isClearable').addEventListener('change', (e) => { paintPad.setClearable(e.target.checked); });
+  document.getElementById('isDownloadable').addEventListener('change', (e) => { paintPad.setDownloadable(e.target.checked); });
+  document.getElementById('isStateChangeable').addEventListener('change', (e) => { paintPad.setStateChangeable(e.target.checked); });
+
+  // or
+
+  /*
+  document.getElementById('width').addEventListener('change', (e) => { paintPad.setAttribute('width', e.target.value); });
+  document.getElementById('height').addEventListener('change', (e) => { paintPad.setAttribute('height', e.target.value); });
+  document.getElementById('lineWidth').addEventListener('change', (e) => { paintPad.setAttribute('lineWidth', e.target.value) });
+  document.getElementById('lineWidthMin').addEventListener('change', (e) => { paintPad.setAttribute('lineWidthMin', e.target.value); });
+  document.getElementById('lineWidthMax').addEventListener('change', (e) => { paintPad.setAttribute('lineWidthMax', e.target.value); });
+  document.getElementById('color').addEventListener('change', (e) => { paintPad.setAttribute('color', e.target.value); });
+  document.getElementById('imageName').addEventListener('change', (e) => { paintPad.setAttribute('imageName', e.target.value); });
+  document.getElementById('hasSlider').addEventListener('change', (e) => { paintPad.setAttribute('hasSlider', e.target.checked); });
+  document.getElementById('hasColorPicker').addEventListener('change', (e) => { paintPad.setAttribute('hasColorPicker', e.target.checked); });
+  document.getElementById('isClearable').addEventListener('change', (e) => { paintPad.setAttribute('isClearable', e.target.checked); });
+  document.getElementById('isDownloadable').addEventListener('change', (e) => { paintPad.setAttribute('isDownloadable', e.target.checked); });
+  document.getElementById('isStateChangeable').addEventListener('change', (e) => { paintPad.setAttribute('isStateChangeable', e.target.checked); });
+  */
+</script>
 
 </html>

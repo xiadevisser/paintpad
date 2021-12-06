@@ -14,6 +14,9 @@ export class Canvas {
     download(): void;
     undo(): void;
     redo(): void;
+    setWidth(width: string): void;
+    setHeight(height: string): void;
+    setImageName(name: string): void;
 }
 
 export class ColorPicker {
@@ -32,20 +35,32 @@ type PaintPadOptions = {
     imageName?: string;
     hasSlider?: boolean;
     hasColorPicker?: boolean;
-    canClear?: boolean;
-    canDownload?: boolean;
-    canChangeState?: boolean;
+    isClearable?: boolean;
+    isDownloadable?: boolean;
+    isStateChangeable?: boolean;
 };
 export class PaintPad extends HTMLElement {
     constructor(opt?: PaintPadOptions);
+    setWidth(width: string): void;
+    setHeight(height: string): void;
+    setLineWidth(lineWidth: number): void;
+    setLineWidthMin(value: number): void;
+    setLineWidthMax(value: number): void;
+    setColor(color: string): void;
+    setImageName(name: string): void;
+    setSlider(isVisible: boolean): void;
+    setColorPicker(isVisible: boolean): void;
+    setClearable(isVisible: boolean): void;
+    setDownloadable(isVisible: boolean): void;
+    setStateChangeable(isVisible: boolean): void;
     clear(): void;
     download(): void;
     undo(): void;
     redo(): void;
-    setColor(color: string): void;
-    setLineWidth(lineWidth: number): void;
     getDataURL(): string;
     getBlob(callback: BlobCallback, type?: string | undefined, quality?: number): void;
+    attributeChangedCallback(name: string, oldValue: string, newValue: string): void;
+    static get observedAttributes(): string[];
 }
 export {};
 
@@ -53,5 +68,9 @@ export class Slider {
     constructor(min: number, max: number, value: number, onChange: (value: number) => void);
     get(): HTMLInputElement;
     setValue(value: number): void;
+    setMinValue(value: number): void;
+    setMaxValue(value: number): void;
 }
+
+export function getStyle(): HTMLStyleElement;
 
