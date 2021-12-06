@@ -2,6 +2,7 @@ import { Button } from './button';
 import { Canvas } from './canvas';
 import { ColorPicker } from './colorpicker';
 import { Slider } from './slider';
+import { getStyle } from './style';
 
 type PaintPadOptions = {
   width?: string;
@@ -13,15 +14,23 @@ type PaintPadOptions = {
   imageName?: string;
   hasSlider?: boolean;
   hasColorPicker?: boolean;
-  canClear?: boolean;
-  canDownload?: boolean;
-  canChangeState?: boolean;
+  isClearable?: boolean;
+  isDownloadable?: boolean;
+  isStateChangeable?: boolean;
 }
 
 export class PaintPad extends HTMLElement {
   private readonly canvas: Canvas;
-  private readonly colorPicker?: ColorPicker;
-  private readonly slider?: Slider;
+  private readonly slider: Slider;
+  private readonly colorPicker: ColorPicker;
+  private readonly clearBtn: Button;
+  private readonly downloadBtn: Button;
+  private readonly undoBtn: Button;
+  private readonly redoBtn: Button;
+
+  private readonly wrapper: HTMLDivElement;
+  private readonly btnContainer: HTMLDivElement;
+
   private readonly width: string = '500px';
   private readonly height: string = '500px';
   private readonly lineWidth: number = 10;
@@ -31,15 +40,12 @@ export class PaintPad extends HTMLElement {
   private readonly imageName: string = 'paintpad';
   private readonly hasSlider: boolean = true;
   private readonly hasColorPicker: boolean = true;
-  private readonly canClear: boolean = true;
-  private readonly canDownload: boolean = true;
-  private readonly canChangeState: boolean = true;
+  private readonly isClearable: boolean = true;
+  private readonly isDownloadable: boolean = true;
+  private readonly isStateChangeable: boolean = true;
 
   constructor(opt?: PaintPadOptions) {
     super();
-    const shadow = this.attachShadow({ mode: 'open' });
-    const wrapper = document.createElement('div');
-    wrapper.id = 'wrapper';
 
     this.width = opt?.width ?? this.getAttribute('width') ?? this.width;
     this.height = opt?.height ?? this.getAttribute('height') ?? this.height;
@@ -50,49 +56,114 @@ export class PaintPad extends HTMLElement {
     this.imageName = opt?.imageName ?? this.getAttribute('imageName') ?? this.imageName;
     this.hasSlider = opt?.hasSlider ?? (this.getAttribute('hasSlider') ? (this.getAttribute('hasSlider') == 'true') : this.hasSlider);
     this.hasColorPicker = opt?.hasColorPicker ?? (this.getAttribute('hasColorPicker') ? (this.getAttribute('hasColorPicker') == 'true') : this.hasColorPicker);
-    this.canClear = opt?.canClear ?? (this.getAttribute('canClear') ? (this.getAttribute('canClear') == 'true') : this.canClear);
-    this.canDownload = opt?.canDownload ?? (this.getAttribute('canDownload') ? (this.getAttribute('canDownload') == 'true') : this.canDownload);
-    this.canChangeState = opt?.canChangeState ?? (this.getAttribute('canChangeState') ? (this.getAttribute('canChangeState') == 'true') : this.canChangeState);
+    this.isClearable = opt?.isClearable ?? (this.getAttribute('isClearable') ? (this.getAttribute('isClearable') == 'true') : this.isClearable);
+    this.isDownloadable = opt?.isDownloadable ?? (this.getAttribute('isDownloadable') ? (this.getAttribute('isDownloadable') == 'true') : this.isDownloadable);
+    this.isStateChangeable = opt?.isStateChangeable ?? (this.getAttribute('isStateChangeable') ? (this.getAttribute('isStateChangeable') == 'true') : this.isStateChangeable);
+
+    const shadow = this.attachShadow({ mode: 'open' });
+    this.wrapper = document.createElement('div');
+    this.wrapper.id = 'wrapper';
+    this.wrapper.style.width = this.width;
 
     this.canvas = new Canvas(this.width, this.height, this.lineWidth, this.color, this.imageName);
-    wrapper.append(this.canvas.get());
+    this.wrapper.append(this.canvas.get());
 
-    if (this.hasSlider) {
-      this.slider = new Slider(this.lineWidthMin, this.lineWidthMax, this.lineWidth, (v) => this.canvas.setLineWidth(v));
-      wrapper.append(this.slider.get());
-    }
+    this.slider = new Slider(this.lineWidthMin, this.lineWidthMax, this.lineWidth, (v) => this.canvas.setLineWidth(v));
+    this.wrapper.append(this.slider.get());
 
-    const btnContainer = document.createElement('div');
-    btnContainer.id = 'btn-container';
+    this.btnContainer = document.createElement('div');
+    this.btnContainer.id = 'btn-container';
+    this.btnContainer.style.width = this.width;
 
     const btnContainerLeft = document.createElement('div');
-    if (this.canClear) {
-      const clearBtn = new Button('clear', () => this.canvas.clear());
-      btnContainerLeft.append(clearBtn.get());
-    }
-    if (this.canDownload) {
-      const downloadBtn = new Button('download', () => this.canvas.download());
-      btnContainerLeft.append(downloadBtn.get());
-    }
-    if (this.canChangeState) {
-      const undoBtn = new Button('undo', () => this.canvas.undo());
-      btnContainerLeft.append(undoBtn.get());
-      const redoBtn = new Button('redo', () => this.canvas.redo());
-      btnContainerLeft.append(redoBtn.get());
-    }
-    btnContainer.append(btnContainerLeft);
+    this.clearBtn = new Button('clear', () => this.canvas.clear());
+    btnContainerLeft.append(this.clearBtn.get());
+    this.downloadBtn = new Button('download', () => this.canvas.download());
+    btnContainerLeft.append(this.downloadBtn.get());
+    this.undoBtn = new Button('undo', () => this.canvas.undo());
+    btnContainerLeft.append(this.undoBtn.get());
+    this.redoBtn = new Button('redo', () => this.canvas.redo());
+    btnContainerLeft.append(this.redoBtn.get());
+    this.btnContainer.append(btnContainerLeft);
 
-    if (this.hasColorPicker) {
-      const btnContainerRight = document.createElement('div');
-      this.colorPicker = new ColorPicker(this.color, (v) => this.canvas.setColor(v));
-      btnContainerRight.append(this.colorPicker.get());
-      btnContainer.append(btnContainerRight);
+    const btnContainerRight = document.createElement('div');
+    this.colorPicker = new ColorPicker(this.color, (v) => this.canvas.setColor(v));
+    btnContainerRight.append(this.colorPicker.get());
+    this.btnContainer.append(btnContainerRight);
+
+    this.wrapper.append(this.btnContainer);
+
+    shadow.appendChild(getStyle());
+    shadow.append(this.wrapper);
+
+    this.setVisibility(this.slider.get(), this.hasSlider);
+    this.setVisibility(this.colorPicker.get(), this.hasColorPicker);
+    this.setVisibility(this.clearBtn.get(), this.isClearable);
+    this.setVisibility(this.downloadBtn.get(), this.isDownloadable);
+    this.setVisibility(this.redoBtn.get(), this.isStateChangeable);
+    this.setVisibility(this.undoBtn.get(), this.isStateChangeable);
+  }
+
+  public setWidth(width: string): void {
+    this.canvas.setWidth(width);
+    this.btnContainer.style.width = width;
+    this.wrapper.style.width = width;
+    this.slider.get().style.width = width;
+  }
+
+  public setHeight(height: string): void {
+    this.canvas.setHeight(height);
+  }
+
+  public setLineWidth(lineWidth: number): void {
+    this.canvas.setLineWidth(lineWidth);
+    this.slider.setValue(lineWidth);
+  }
+
+  public setLineWidthMin(lineWidth: number): void {
+    this.slider.setMinValue(lineWidth);
+  }
+
+  public setLineWidthMax(lineWidth: number): void {
+    this.slider.setMaxValue(lineWidth);
+  }
+
+  public setColor(color: string): void {
+    this.canvas.setColor(color);
+    this.colorPicker.setColor(color);
+  }
+
+  public setImageName(name: string): void {
+    this.canvas.setImageName(name);
+  }
+
+  public setSlider(isVisible: boolean): void {
+    this.setVisibility(this.slider.get(), isVisible);
+  }
+
+  public setColorPicker(isVisible: boolean): void {
+    this.setVisibility(this.colorPicker.get(), isVisible);
+  }
+
+  public setClearable(isVisible: boolean): void {
+    this.setVisibility(this.clearBtn.get(), isVisible);
+  }
+
+  public setDownloadable(isVisible: boolean): void {
+    this.setVisibility(this.downloadBtn.get(), isVisible);
+  }
+
+  public setStateChangeable(isVisible: boolean): void {
+    this.setVisibility(this.redoBtn.get(), isVisible);
+    this.setVisibility(this.undoBtn.get(), isVisible);
+  }
+
+  private setVisibility(element: HTMLElement, isVisible: boolean,) {
+    if (isVisible) {
+      element.style.display = 'inline-block';
+    } else {
+      element.style.display = 'none';
     }
-
-    wrapper.append(btnContainer);
-
-    shadow.appendChild(this.getStyle());
-    shadow.append(wrapper);
   }
 
   public clear(): void {
@@ -111,16 +182,6 @@ export class PaintPad extends HTMLElement {
     this.canvas.redo();
   }
 
-  public setColor(color: string): void {
-    this.canvas.setColor(color);
-    this.colorPicker?.setColor(color);
-  }
-
-  public setLineWidth(lineWidth: number): void {
-    this.canvas.setLineWidth(lineWidth);
-    this.slider?.setValue(lineWidth);
-  }
-
   public getDataURL(): string {
     return this.canvas.get().toDataURL('image/png');
   }
@@ -129,92 +190,51 @@ export class PaintPad extends HTMLElement {
     return this.canvas.get().toBlob(callback, type, quality);
   }
 
-  private getStyle(): HTMLStyleElement {
-    const style = document.createElement('style');
-    style.innerHTML = `
-    #wrapper {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      width: ${this.width};
+  private attributeChangedCallback(name: string, oldValue: string, newValue: string) {
+    switch (name) {
+      case 'width':
+        this.setWidth(newValue);
+        break;
+      case 'height':
+        this.setHeight(newValue);
+        break;
+      case 'linewidth':
+        this.setLineWidth(parseInt(newValue));
+        break;
+      case 'linewidthmin':
+        this.setLineWidthMin(parseInt(newValue));
+        break;
+      case 'linewidthmax':
+        this.setLineWidthMax(parseInt(newValue));
+        break;
+      case 'color':
+        this.setColor(newValue);
+        break;
+      case 'imagename':
+        this.setImageName(newValue);
+        break;
+      case 'hasslider':
+        this.setSlider(newValue == 'true');
+        break;
+      case 'hascolorpicker':
+        this.setColorPicker(newValue == 'true');
+        break;
+      case 'isclearable':
+        this.setClearable(newValue == 'true');
+        break;
+      case 'isdownloadable':
+        this.setDownloadable(newValue == 'true');
+        break;
+      case 'isstatechangeable':
+        this.setStateChangeable(newValue == 'true');
+        break;
     }
-
-    canvas {
-      background-color: #fff;
-      border: 2px solid #d3d3d3;
-    }
-
-    #btn-container {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      width: ${this.width};
-    }
-    
-    button {
-      width: 20px;
-      height: 20px;
-      background: none;
-      border: none;
-      padding: 0;
-      cursor: pointer;
-    }
-
-    button:hover {
-      border-bottom: 1px solid #d3d3d3;
-      transition: all 1s ease;
-    }
-    
-    input[type="range"] {
-      -webkit-appearance: none;
-      height: 2px;
-      background: #444;
-      opacity: 0.7;
-      transition: opacity .2s;
-      margin-top: 8px;
-      width: ${this.width};
-    }
-    
-    input[type="range"]:hover {
-      opacity: 1;
-    }
-    
-    input[type="range"]::-webkit-slider-thumb {
-      appearance: none;
-      width: 10px;
-      height: 10px;
-      border-radius: 50%;
-      border: 1px solid black;
-      background: #fff;
-      cursor: pointer;
-      z-index: 1;
-    }
-
-    input[type="range"]::-moz-range-thumb {
-      width: 8px;
-      height: 8px;
-      border-radius: 50%;
-      border: 1px solid black;
-      cursor: pointer;
-      z-index: 1;
-    }
-
-    input[type="color"] {
-      width: 20px;
-      height: 20px;
-      border: none;
-      background: none;
-      cursor: pointer;
-    }
-
-    input[type="color"]:hover {
-      border-bottom: 1px solid #d3d3d3;
-      transition: all 1s ease;
-    }
-    `;
-    return style;
   }
 
+  static get observedAttributes() {
+    return ['width', 'height', 'linewidth', 'linewidthmin', 'linewidthmax', 'color', 'imagename',
+      'hasslider', 'hascolorpicker', 'isclearable', 'isdownloadable', 'isstatechangeable'];
+  }
 }
 
 customElements.define('paint-pad', PaintPad);

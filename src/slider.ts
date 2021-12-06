@@ -16,7 +16,15 @@ export class Slider {
     return this.slider;
   }
 
-  public setValue(value: number) {
+  public setValue(value: number): void {
     this.slider.value = value.toString();
+  }
+
+  public setMinValue(value: number): void {
+    this.slider.min = value.toString();
+  }
+
+  public setMaxValue(value: number): void {
+    this.slider.max = value.toString();
   }
 }

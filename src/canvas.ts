@@ -10,13 +10,13 @@ type Painting = {
 export class Canvas {
   private readonly canvas: HTMLCanvasElement;
   private readonly context: CanvasRenderingContext2D | null;
-  private readonly imageName: string;
-
+  
   private isPainting = false;
   private paintings: Painting[] = [];
   private currentIndex = 0;
   private color: string;
   private lineWidth: number;
+  private imageName: string;
 
   constructor(width: string, height: string, lineWidth: number, color: string, imageName: string) {
     this.lineWidth = lineWidth;
@@ -79,6 +79,20 @@ export class Canvas {
       this.currentIndex++;
     }
     this.repaint();
+  }
+
+  public setWidth(width: string): void {
+    this.canvas.setAttribute('width', width);
+    this.repaint();
+  }
+
+  public setHeight(height: string): void {
+    this.canvas.setAttribute('height', height);
+    this.repaint();
+  }
+
+  public setImageName(name: string): void {
+    this.imageName = name;
   }
 
   private addPainting(x: number, y: number, isDragging: boolean): void {

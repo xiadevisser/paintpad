@@ -1,6 +1,6 @@
 {
   "name": "paintpad",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "description": "Canvas component which allows freeform painting",
   "keywords": [
     "paintpad",
@@ -8,7 +8,9 @@
     "ui",
     "draw",
     "drawing",
-    "sketch"
+    "sketch",
+    "paint",
+    "painting"
   ],
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
