@@ -87,10 +87,26 @@ import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 
 import "paintpad";
 
-@ViewChild('paintPad') public paintPad!: ElementRef;
+export class AppComponent {
+  @ViewChild('paintPad') public paintPad!: ElementRef;
 
-public clear(): void {
-  this.paintPad.nativeElement.clear();
+  public clear(): void {
+    this.paintPad.nativeElement.clear();
+  }
+}
+```
+
+### React
+
+```js
+import "paintpad";
+
+function App() {
+  const paintPad = useRef(null);
+
+  const clear = () => paintPad.current.clear();
+
+  return <paint-pad ref={paintPad} width="300px" color="#ffdab9"></paint-pad>;
 }
 ```
 
