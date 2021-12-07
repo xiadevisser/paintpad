@@ -63,31 +63,29 @@ export class PaintPad extends HTMLElement {
     const shadow = this.attachShadow({ mode: 'open' });
     this.wrapper = document.createElement('div');
     this.wrapper.id = 'wrapper';
-    this.wrapper.style.width = this.width;
 
     this.canvas = new Canvas(this.width, this.height, this.lineWidth, this.color, this.imageName);
     this.wrapper.append(this.canvas.get());
 
-    this.slider = new Slider(this.lineWidthMin, this.lineWidthMax, this.lineWidth, (v) => this.canvas.setLineWidth(v));
+    this.slider = new Slider(this.lineWidthMin, this.lineWidthMax, this.lineWidth, (v) => this.setLineWidth(v));
     this.wrapper.append(this.slider.get());
 
     this.btnContainer = document.createElement('div');
     this.btnContainer.id = 'btn-container';
-    this.btnContainer.style.width = this.width;
 
     const btnContainerLeft = document.createElement('div');
-    this.clearBtn = new Button('clear', () => this.canvas.clear());
+    this.clearBtn = new Button('clear', () => this.clear());
     btnContainerLeft.append(this.clearBtn.get());
-    this.downloadBtn = new Button('download', () => this.canvas.download());
+    this.downloadBtn = new Button('download', () => this.download());
     btnContainerLeft.append(this.downloadBtn.get());
-    this.undoBtn = new Button('undo', () => this.canvas.undo());
+    this.undoBtn = new Button('undo', () => this.undo());
     btnContainerLeft.append(this.undoBtn.get());
-    this.redoBtn = new Button('redo', () => this.canvas.redo());
+    this.redoBtn = new Button('redo', () => this.redo());
     btnContainerLeft.append(this.redoBtn.get());
     this.btnContainer.append(btnContainerLeft);
 
     const btnContainerRight = document.createElement('div');
-    this.colorPicker = new ColorPicker(this.color, (v) => this.canvas.setColor(v));
+    this.colorPicker = new ColorPicker(this.color, (v) => this.setColor(v));
     btnContainerRight.append(this.colorPicker.get());
     this.btnContainer.append(btnContainerRight);
 
@@ -95,6 +93,8 @@ export class PaintPad extends HTMLElement {
 
     shadow.appendChild(getStyle());
     shadow.append(this.wrapper);
+
+    this.setWidth(this.width);
 
     this.setVisibility(this.slider.get(), this.hasSlider);
     this.setVisibility(this.colorPicker.get(), this.hasColorPicker);
@@ -106,8 +106,8 @@ export class PaintPad extends HTMLElement {
 
   public setWidth(width: string): void {
     this.canvas.setWidth(width);
-    this.btnContainer.style.width = width;
     this.wrapper.style.width = width;
+    this.btnContainer.style.width = width;
     this.slider.get().style.width = width;
   }
 

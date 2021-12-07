@@ -26,10 +26,11 @@ export function getStyle(): HTMLStyleElement {
       border: none;
       padding: 0;
       cursor: pointer;
+      border-bottom: 1px solid transparent;
     }
 
     button:hover {
-      border-bottom: 1px solid #d3d3d3;
+      border-bottom: 1px solid #444;
       transition: all 1s ease;
     }
     
@@ -71,11 +72,13 @@ export function getStyle(): HTMLStyleElement {
       height: 20px;
       border: none;
       background: none;
+      padding: 0;
       cursor: pointer;
+      border-bottom: 1px solid transparent;
     }
 
     input[type="color"]:hover {
-      border-bottom: 1px solid #d3d3d3;
+      border-bottom: 1px solid #444;
       transition: all 1s ease;
     }
     `;

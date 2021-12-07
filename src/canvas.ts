@@ -120,7 +120,7 @@ export class Canvas {
             const prevPainting = this.paintings[i - 1];
             ctx.moveTo(prevPainting.x, prevPainting.y);
           } else {
-            ctx.moveTo(painting.x - 1, painting.y);
+            ctx.moveTo(painting.x, painting.y);
           }
           ctx.lineTo(painting.x, painting.y);
           ctx.closePath();
@@ -140,11 +140,11 @@ export class Canvas {
   }
 
   private onMouseUp(): void {
-    this.isPainting = false;
+    this.onPaintEnd();
   }
 
   private onMouseLeave(): void {
-    this.isPainting = false;
+    this.onPaintEnd();
   }
 
   private onMouseDown(e: MouseEvent): void {
@@ -158,7 +158,7 @@ export class Canvas {
   }
 
   private onTouchEnd() {
-    this.isPainting = false;
+    this.onPaintEnd();
   }
 
   private onTouchStart(e: TouchEvent) {
@@ -188,5 +188,9 @@ export class Canvas {
       this.addPainting(clientX, clientY, true);
       this.repaint();
     }
+  }
+
+  private onPaintEnd() {
+    this.isPainting = false;
   }
 }
