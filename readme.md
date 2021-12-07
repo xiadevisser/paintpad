@@ -120,12 +120,14 @@ function App() {
 | `lineWidthMin`      | `number`  | minimal thickness of the pencil                                 | `1`          |
 | `lineWidthMax`      | `number`  | maximum thickness of the pencil                                 | `30`         |
 | `color`             | `string`  | initial color of the pencil (must be a hexcode of 6 characters) | `'#000000'`  |
+| `tool`              | `string`  | initial tool of the pencil (`'free'` or `'line'`)               | `'free'`     |
 | `imageName`         | `string`  | name of the downloaded image                                    | `'paintpad'` |
 | `hasSlider`         | `boolean` | if the user can change the thickness of the pencil              | `true`       |
 | `hasColorPicker`    | `boolean` | if the user can change the color of the pencil                  | `true`       |
 | `isClearable`       | `boolean` | if the user can clear the canvas                                | `true`       |
 | `isDownloadable`    | `boolean` | if the user can download an image of the canvas                 | `true`       |
 | `isStateChangeable` | `boolean` | if the user can undo and redo the state to the canvas           | `true`       |
+| `isToolChangeable`  | `boolean` | if the user can change the tool of the pencil                   | `true`       |
 
 ## Methods
 
@@ -137,12 +139,14 @@ function App() {
 | `setLineWidthMin`    | `lineWidth: number`                                                            | sets the minimal thickness of the pencil              |
 | `setLineWidthMax`    | `lineWidth: number`                                                            | sets the maximum thickness of the pencil              |
 | `setColor`           | `color: string`                                                                | sets the color of the pencil                          |
+| `setTool`            | `tool: string`                                                                 | sets the tool of the pencil                           |
 | `setImageName`       | `name: string`                                                                 | sets the name of the downloaded image                 |
 | `setSlider`          | `isVisible: boolean`                                                           | if the user can change the thickness of the pencil    |
 | `setColorPicker`     | `isVisible: boolean`                                                           | if the user can change the color of the pencil        |
 | `setClearable`       | `isVisible: boolean`                                                           | if the user can clear the canvas                      |
 | `setDownloadable`    | `isVisible: boolean`                                                           | if the user can download an image of the canvas       |
 | `setStateChangeable` | `isVisible: boolean`                                                           | if the user can undo and redo the state to the canvas |
+| `setToolChangeable`  | `isVisible: boolean`                                                           | if the user can change the tool of the pencil         |
 | `clear`              |                                                                                | clears the canvas                                     |
 | `download`           |                                                                                | downloads an image of the canvas                      |
 | `undo`               |                                                                                | changes the state of the canvas to the previous state |

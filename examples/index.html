@@ -141,6 +141,10 @@
         <td><input id="color" type="text" placeholder="#3EB489" /></td>
       </tr>
       <tr>
+        <td>tool</td>
+        <td><input id="tool" type="text" placeholder="'free' or 'line'" /></td>
+      </tr>
+      <tr>
         <td>image name</td>
         <td><input id="imageName" type="text" placeholder="my image" /></td>
       </tr>
@@ -179,6 +183,13 @@
             <span class="checkmark"></span>
           </label></td>
       </tr>
+      <tr>
+        <td>is tool changeable</td>
+        <td><label class="container">
+            <input id="isToolChangeable" type="checkbox" checked="checked">
+            <span class="checkmark"></span>
+          </label></td>
+      </tr>
     </table>
 
   </div>
@@ -193,12 +204,14 @@
   document.getElementById('lineWidthMin').addEventListener('change', (e) => { paintPad.setLineWidthMin(e.target.value); });
   document.getElementById('lineWidthMax').addEventListener('change', (e) => { paintPad.setLineWidthMax(e.target.value); });
   document.getElementById('color').addEventListener('change', (e) => { paintPad.setColor(e.target.value); });
+  document.getElementById('tool').addEventListener('change', (e) => { paintPad.setTool(e.target.value); });
   document.getElementById('imageName').addEventListener('change', (e) => { paintPad.setImageName(e.target.value); });
   document.getElementById('hasSlider').addEventListener('change', (e) => { paintPad.setSlider(e.target.checked); });
   document.getElementById('hasColorPicker').addEventListener('change', (e) => { paintPad.setColorPicker(e.target.checked); });
   document.getElementById('isClearable').addEventListener('change', (e) => { paintPad.setClearable(e.target.checked); });
   document.getElementById('isDownloadable').addEventListener('change', (e) => { paintPad.setDownloadable(e.target.checked); });
   document.getElementById('isStateChangeable').addEventListener('change', (e) => { paintPad.setStateChangeable(e.target.checked); });
+  document.getElementById('isToolChangeable').addEventListener('change', (e) => { paintPad.setToolChangeable(e.target.checked); });
 
   // or
 
@@ -209,12 +222,14 @@
   document.getElementById('lineWidthMin').addEventListener('change', (e) => { paintPad.setAttribute('lineWidthMin', e.target.value); });
   document.getElementById('lineWidthMax').addEventListener('change', (e) => { paintPad.setAttribute('lineWidthMax', e.target.value); });
   document.getElementById('color').addEventListener('change', (e) => { paintPad.setAttribute('color', e.target.value); });
+  document.getElementById('tool').addEventListener('change', (e) => { paintPad.setAttribute('tool', e.target.value); });
   document.getElementById('imageName').addEventListener('change', (e) => { paintPad.setAttribute('imageName', e.target.value); });
   document.getElementById('hasSlider').addEventListener('change', (e) => { paintPad.setAttribute('hasSlider', e.target.checked); });
   document.getElementById('hasColorPicker').addEventListener('change', (e) => { paintPad.setAttribute('hasColorPicker', e.target.checked); });
   document.getElementById('isClearable').addEventListener('change', (e) => { paintPad.setAttribute('isClearable', e.target.checked); });
   document.getElementById('isDownloadable').addEventListener('change', (e) => { paintPad.setAttribute('isDownloadable', e.target.checked); });
   document.getElementById('isStateChangeable').addEventListener('change', (e) => { paintPad.setAttribute('isStateChangeable', e.target.checked); });
+  document.getElementById('isToolChangeable').addEventListener('change', (e) => { paintPad.setAttribute('isToolChangeable', e.target.checked); });
   */
 </script>
 

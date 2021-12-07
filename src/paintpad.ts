@@ -1,5 +1,5 @@
 import { Button } from './button';
-import { Canvas } from './canvas';
+import { Canvas, Tool } from './canvas';
 import { ColorPicker } from './colorpicker';
 import { Slider } from './slider';
 import { getStyle } from './style';
@@ -11,12 +11,14 @@ type PaintPadOptions = {
   lineWidthMin?: number;
   lineWidthMax?: number;
   color?: string;
+  tool?: string;
   imageName?: string;
   hasSlider?: boolean;
   hasColorPicker?: boolean;
   isClearable?: boolean;
   isDownloadable?: boolean;
   isStateChangeable?: boolean;
+  isToolChangeable?: boolean;
 }
 
 export class PaintPad extends HTMLElement {
@@ -27,6 +29,8 @@ export class PaintPad extends HTMLElement {
   private readonly downloadBtn: Button;
   private readonly undoBtn: Button;
   private readonly redoBtn: Button;
+  private readonly freeToolBtn: Button;
+  private readonly lineToolBtn: Button;
 
   private readonly wrapper: HTMLDivElement;
   private readonly btnContainer: HTMLDivElement;
@@ -37,12 +41,14 @@ export class PaintPad extends HTMLElement {
   private readonly lineWidthMin: number = 1;
   private readonly lineWidthMax: number = 30;
   private readonly color: string = '#000000';
+  private readonly tool: Tool = Tool.free;
   private readonly imageName: string = 'paintpad';
   private readonly hasSlider: boolean = true;
   private readonly hasColorPicker: boolean = true;
   private readonly isClearable: boolean = true;
   private readonly isDownloadable: boolean = true;
   private readonly isStateChangeable: boolean = true;
+  private readonly isToolChangeable: boolean = true;
 
   constructor(opt?: PaintPadOptions) {
     super();
@@ -53,22 +59,25 @@ export class PaintPad extends HTMLElement {
     this.lineWidthMin = opt?.lineWidthMin ?? parseInt(this.getAttribute('lineWidthMin') ?? this.lineWidthMin.toString());
     this.lineWidthMax = opt?.lineWidthMax ?? parseInt(this.getAttribute('lineWidthMax') ?? this.lineWidthMax.toString());
     this.color = opt?.color ?? this.getAttribute('color') ?? this.color;
+    this.tool = opt?.tool ?? this.getAttribute('tool') ?? this.tool;
     this.imageName = opt?.imageName ?? this.getAttribute('imageName') ?? this.imageName;
     this.hasSlider = opt?.hasSlider ?? (this.getAttribute('hasSlider') ? (this.getAttribute('hasSlider') == 'true') : this.hasSlider);
     this.hasColorPicker = opt?.hasColorPicker ?? (this.getAttribute('hasColorPicker') ? (this.getAttribute('hasColorPicker') == 'true') : this.hasColorPicker);
     this.isClearable = opt?.isClearable ?? (this.getAttribute('isClearable') ? (this.getAttribute('isClearable') == 'true') : this.isClearable);
     this.isDownloadable = opt?.isDownloadable ?? (this.getAttribute('isDownloadable') ? (this.getAttribute('isDownloadable') == 'true') : this.isDownloadable);
     this.isStateChangeable = opt?.isStateChangeable ?? (this.getAttribute('isStateChangeable') ? (this.getAttribute('isStateChangeable') == 'true') : this.isStateChangeable);
+    this.isToolChangeable = opt?.isToolChangeable ?? (this.getAttribute('isToolChangeable') ? (this.getAttribute('isToolChangeable') == 'true') : this.isToolChangeable);
 
     const shadow = this.attachShadow({ mode: 'open' });
     this.wrapper = document.createElement('div');
     this.wrapper.id = 'wrapper';
     this.wrapper.style.width = this.width;
 
-    this.canvas = new Canvas(this.width, this.height, this.lineWidth, this.color, this.imageName);
-    this.wrapper.append(this.canvas.get());
+    this.canvas = new Canvas(this.width, this.height, this.lineWidth, this.color, this.tool, this.imageName);
+    this.wrapper.append(this.canvas.getPaintCanvas());
+    this.wrapper.append(this.canvas.getPreviewCanvas());
 
-    this.slider = new Slider(this.lineWidthMin, this.lineWidthMax, this.lineWidth, (v) => this.canvas.setLineWidth(v));
+    this.slider = new Slider(this.lineWidthMin, this.lineWidthMax, this.lineWidth, (v) => this.setLineWidth(v));
     this.wrapper.append(this.slider.get());
 
     this.btnContainer = document.createElement('div');
@@ -76,18 +85,22 @@ export class PaintPad extends HTMLElement {
     this.btnContainer.style.width = this.width;
 
     const btnContainerLeft = document.createElement('div');
-    this.clearBtn = new Button('clear', () => this.canvas.clear());
+    this.clearBtn = new Button('clear', () => this.clear());
     btnContainerLeft.append(this.clearBtn.get());
-    this.downloadBtn = new Button('download', () => this.canvas.download());
+    this.downloadBtn = new Button('download', () => this.download());
     btnContainerLeft.append(this.downloadBtn.get());
-    this.undoBtn = new Button('undo', () => this.canvas.undo());
+    this.undoBtn = new Button('undo', () => this.undo());
     btnContainerLeft.append(this.undoBtn.get());
-    this.redoBtn = new Button('redo', () => this.canvas.redo());
+    this.redoBtn = new Button('redo', () => this.redo());
     btnContainerLeft.append(this.redoBtn.get());
     this.btnContainer.append(btnContainerLeft);
 
     const btnContainerRight = document.createElement('div');
-    this.colorPicker = new ColorPicker(this.color, (v) => this.canvas.setColor(v));
+    this.freeToolBtn = new Button('free', () => this.setTool(Tool.free));
+    btnContainerRight.append(this.freeToolBtn.get());
+    this.lineToolBtn = new Button('line', () => this.setTool(Tool.line));
+    btnContainerRight.append(this.lineToolBtn.get());
+    this.colorPicker = new ColorPicker(this.color, (v) => this.setColor(v));
     btnContainerRight.append(this.colorPicker.get());
     this.btnContainer.append(btnContainerRight);
 
@@ -102,6 +115,10 @@ export class PaintPad extends HTMLElement {
     this.setVisibility(this.downloadBtn.get(), this.isDownloadable);
     this.setVisibility(this.redoBtn.get(), this.isStateChangeable);
     this.setVisibility(this.undoBtn.get(), this.isStateChangeable);
+    this.setVisibility(this.freeToolBtn.get(), this.isToolChangeable);
+    this.setVisibility(this.lineToolBtn.get(), this.isToolChangeable);
+
+    this.setTool(this.tool);
   }
 
   public setWidth(width: string): void {
@@ -133,6 +150,20 @@ export class PaintPad extends HTMLElement {
     this.colorPicker.setColor(color);
   }
 
+  public setTool(tool: Tool): void {
+    this.canvas.setTool(tool);
+    switch (tool) {
+      case Tool.free:
+        this.freeToolBtn.setActive(true);
+        this.lineToolBtn.setActive(false);
+        break;
+      case Tool.line:
+        this.freeToolBtn.setActive(false);
+        this.lineToolBtn.setActive(true);
+        break;
+    }
+  }
+
   public setImageName(name: string): void {
     this.canvas.setImageName(name);
   }
@@ -156,6 +187,11 @@ export class PaintPad extends HTMLElement {
   public setStateChangeable(isVisible: boolean): void {
     this.setVisibility(this.redoBtn.get(), isVisible);
     this.setVisibility(this.undoBtn.get(), isVisible);
+  }
+
+  public setToolChangeable(isVisible: boolean): void {
+    this.setVisibility(this.freeToolBtn.get(), isVisible);
+    this.setVisibility(this.lineToolBtn.get(), isVisible);
   }
 
   private setVisibility(element: HTMLElement, isVisible: boolean,) {
@@ -183,11 +219,11 @@ export class PaintPad extends HTMLElement {
   }
 
   public getDataURL(): string {
-    return this.canvas.get().toDataURL('image/png');
+    return this.canvas.getPaintCanvas().toDataURL('image/png');
   }
 
   public getBlob(callback: BlobCallback, type?: string | undefined, quality?: number): void {
-    return this.canvas.get().toBlob(callback, type, quality);
+    return this.canvas.getPaintCanvas().toBlob(callback, type, quality);
   }
 
   private attributeChangedCallback(name: string, oldValue: string, newValue: string) {
@@ -210,6 +246,9 @@ export class PaintPad extends HTMLElement {
       case 'color':
         this.setColor(newValue);
         break;
+      case 'tool':
+        this.setTool(newValue);
+        break;
       case 'imagename':
         this.setImageName(newValue);
         break;
@@ -228,12 +267,15 @@ export class PaintPad extends HTMLElement {
       case 'isstatechangeable':
         this.setStateChangeable(newValue == 'true');
         break;
+      case 'istoolchangeable':
+        this.setToolChangeable(newValue == 'true');
+        break;
     }
   }
 
   static get observedAttributes() {
-    return ['width', 'height', 'linewidth', 'linewidthmin', 'linewidthmax', 'color', 'imagename',
-      'hasslider', 'hascolorpicker', 'isclearable', 'isdownloadable', 'isstatechangeable'];
+    return ['width', 'height', 'linewidth', 'linewidthmin', 'linewidthmax', 'color', 'tool', 'imagename',
+      'hasslider', 'hascolorpicker', 'isclearable', 'isdownloadable', 'isstatechangeable', 'istoolchangeable'];
   }
 }
 
