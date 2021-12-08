@@ -1,6 +1,6 @@
 {
   "name": "paintpad",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "description": "Canvas component which allows freeform painting",
   "keywords": [
     "paintpad",

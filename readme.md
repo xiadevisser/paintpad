@@ -10,14 +10,21 @@ Canvas component which allows freeform painting.
 
 ## Installation
 
+### Yarn
 ```
 yarn add paintpad
 ```
 
-or
+### NPM
 
 ```
 npm install --save paintpad
+```
+
+### UNPKG
+
+```html
+<script src="https://unpkg.com/paintpad/dist/index.js" defer></script>
 ```
 
 ## Usage
