@@ -44,8 +44,8 @@ export class PaintPad extends HTMLElement {
     setWidth(width: string): void;
     setHeight(height: string): void;
     setLineWidth(lineWidth: number): void;
-    setLineWidthMin(value: number): void;
-    setLineWidthMax(value: number): void;
+    setLineWidthMin(lineWidth: number): void;
+    setLineWidthMax(lineWidth: number): void;
     setColor(color: string): void;
     setImageName(name: string): void;
     setSlider(isVisible: boolean): void;
@@ -59,7 +59,6 @@ export class PaintPad extends HTMLElement {
     redo(): void;
     getDataURL(): string;
     getBlob(callback: BlobCallback, type?: string | undefined, quality?: number): void;
-    attributeChangedCallback(name: string, oldValue: string, newValue: string): void;
     static get observedAttributes(): string[];
 }
 export {};
