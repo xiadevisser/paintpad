@@ -10,7 +10,7 @@ type Painting = {
 export class Canvas {
   private readonly canvas: HTMLCanvasElement;
   private readonly context: CanvasRenderingContext2D | null;
-  
+
   private isPainting = false;
   private paintings: Painting[] = [];
   private currentIndex = 0;
@@ -120,7 +120,7 @@ export class Canvas {
             const prevPainting = this.paintings[i - 1];
             ctx.moveTo(prevPainting.x, prevPainting.y);
           } else {
-            ctx.moveTo(painting.x, painting.y);
+            ctx.moveTo(painting.x - 1, painting.y);
           }
           ctx.lineTo(painting.x, painting.y);
           ctx.closePath();
