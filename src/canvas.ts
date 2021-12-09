@@ -149,12 +149,12 @@ export class Canvas {
 
   private onMouseDown(e: MouseEvent): void {
     if (e.button == 0) {
-      this.onPaintStart(e.pageX, e.pageY);
+      this.onPaintStart(e.clientX, e.clientY);
     }
   }
 
   private onMouseMove(e: MouseEvent): void {
-    this.onPaintMove(e.pageX, e.pageY);
+    this.onPaintMove(e.clientX, e.clientY);
   }
 
   private onTouchEnd() {
