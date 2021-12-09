@@ -1,16 +1,21 @@
 {
   "name": "paintpad",
-  "version": "2.0.1",
+  "version": "2.0.2",
   "description": "Canvas component which allows freeform painting",
   "keywords": [
-    "paintpad",
     "canvas",
-    "ui",
     "draw",
-    "drawing",
     "sketch",
     "paint",
-    "painting"
+    "front-end",
+    "web",
+    "browser",
+    "ui",
+    "component",
+    "element",
+    "javascript",
+    "typescript"
+
   ],
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
