@@ -67,7 +67,7 @@ export class PaintPad extends HTMLElement {
     this.canvas = new Canvas(this.width, this.height, this.lineWidth, this.color, this.imageName);
     this.wrapper.append(this.canvas.get());
 
-    this.slider = new Slider(this.lineWidthMin, this.lineWidthMax, this.lineWidth, (v) => this.setLineWidth(v));
+    this.slider = new Slider(this.lineWidthMin, this.lineWidthMax, this.lineWidth, (v) => this.canvas.setLineWidth(v));
     this.wrapper.append(this.slider.get());
 
     this.btnContainer = document.createElement('div');
@@ -85,7 +85,7 @@ export class PaintPad extends HTMLElement {
     this.btnContainer.append(btnContainerLeft);
 
     const btnContainerRight = document.createElement('div');
-    this.colorPicker = new ColorPicker(this.color, (v) => this.setColor(v));
+    this.colorPicker = new ColorPicker(this.color, (v) => this.canvas.setColor(v));
     btnContainerRight.append(this.colorPicker.get());
     this.btnContainer.append(btnContainerRight);
 

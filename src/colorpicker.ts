@@ -1,11 +1,11 @@
 export class ColorPicker {
   private readonly colorPicker: HTMLInputElement;
 
-  constructor(color: string, onChange: (value: string) => void) {
+  constructor(color: string, onInput: (value: string) => void) {
     this.colorPicker = document.createElement('input');
     this.colorPicker.type = 'color';
     this.colorPicker.value = color;
-    this.colorPicker.addEventListener('change', () => onChange(this.colorPicker.value));
+    this.colorPicker.addEventListener('input', () => onInput(this.colorPicker.value));
   }
 
   public get(): HTMLInputElement {
