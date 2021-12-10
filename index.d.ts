@@ -20,7 +20,7 @@ export class Canvas {
 }
 
 export class ColorPicker {
-    constructor(color: string, onChange: (value: string) => void);
+    constructor(color: string, onInput: (value: string) => void);
     get(): HTMLInputElement;
     setColor(color: string): void;
 }
